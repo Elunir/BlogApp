@@ -1,12 +1,12 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useMemo, useRef, useState } from "react"
 import { TextInput, TextStyle, ViewStyle } from "react-native"
-import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
-import { useStores } from "../models"
-import { AppStackScreenProps } from "../navigators"
-import { colors, spacing } from "../theme"
+import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../../components"
+import { useStores } from "../../models"
+import { AppStackScreenProps, navigate } from "../../navigators"
+import { colors, spacing } from "../../theme"
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
+interface LoginScreenProps extends AppStackScreenProps<"login"> {}
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
   const authPasswordInput = useRef<TextInput>()
@@ -27,8 +27,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   useEffect(() => {
     // Here is where you could fetch credientials from keychain or storage
     // and pre-fill the form fields.
-    setAuthEmail("ignite@infinite.red")
-    setAuthPassword("ign1teIsAwes0m3")
+    setAuthEmail("")
+    setAuthPassword("")
   }, [])
 
   const errors: typeof validationErrors = isSubmitted ? validationErrors : ({} as any)
@@ -47,6 +47,13 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
     // We'll mock this with a fake token.
     setAuthToken(String(Date.now()))
+    if(authEmail!== ''&&authPassword !== ''){
+      navigate('welcome')
+    }
+  }
+
+  function register() {
+   navigate('register')
   }
 
   const PasswordRightAccessory = useMemo(
@@ -77,9 +84,16 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       contentContainerStyle={$screenContentContainer}
       safeAreaEdges={["top", "bottom"]}
     >
-      <Text testID="login-heading" tx="loginScreen.signIn" preset="heading" style={$signIn} />
-      <Text tx="loginScreen.enterDetails" preset="subheading" style={$enterDetails} />
-      {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
+      <Text testID="login-heading" text="Sign In" preset="heading" style={$signIn} />
+      <Text text="Enter your details below" preset="subheading" style={$enterDetails} />
+      {attemptsCount > 2 && (
+        <Text
+          text="If you are not the existing user then register"
+          size="sm"
+          weight="light"
+          style={$hint}
+        />
+      )}
 
       <TextField
         value={authEmail}
@@ -89,8 +103,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         autoComplete="email"
         autoCorrect={false}
         keyboardType="email-address"
-        labelTx="loginScreen.emailFieldLabel"
-        placeholderTx="loginScreen.emailFieldPlaceholder"
+        label="Email"
+        placeholder="Enter your email address"
         helper={errors?.authEmail}
         status={errors?.authEmail ? "error" : undefined}
         onSubmitEditing={() => authPasswordInput.current?.focus()}
@@ -105,8 +119,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         autoComplete="password"
         autoCorrect={false}
         secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen.passwordFieldLabel"
-        placeholderTx="loginScreen.passwordFieldPlaceholder"
+        label="Password"
+        placeholder="Enter your password"
         helper={errors?.authPassword}
         status={errors?.authPassword ? "error" : undefined}
         onSubmitEditing={login}
@@ -115,10 +129,18 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
       <Button
         testID="login-button"
-        tx="loginScreen.tapToSignIn"
+        text="Sign In!"
         style={$tapButton}
         preset="reversed"
         onPress={login}
+      />
+      <Button
+        testID="register-button"
+        text="Register"
+        style={[$tapButton, $registerButton]}
+        preset="reversed"
+        onPress={register}
+        textStyle={$registerText}
       />
     </Screen>
   )
@@ -147,7 +169,16 @@ const $textField: ViewStyle = {
 }
 
 const $tapButton: ViewStyle = {
-  marginTop: spacing.extraSmall,
+  marginTop: spacing.medium,
+}
+
+const $registerButton: ViewStyle = {
+  backgroundColor: "white",
+  borderWidth: 2,
+  borderColor: "black",
+}
+const $registerText: TextStyle = {
+  color: "black",
 }
 
 // @demo remove-file
