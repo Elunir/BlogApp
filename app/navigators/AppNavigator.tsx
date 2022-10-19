@@ -18,7 +18,7 @@ import { useColorScheme } from "react-native"
 import Config from "../config"
 import { useStores } from "../models"
 import {
-  LoginScreen, RegisterScreen, WelcomeScreen, 
+  LoginScreen, PostDetailScreen, RegisterScreen, WelcomeScreen, 
 } from "../screens/"
 import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
@@ -42,6 +42,7 @@ export type AppStackParamList = {
   login: undefined
   welcome: undefined
   register: undefined
+  PostDetail: undefined
 }
 
 /**
@@ -71,6 +72,7 @@ const AppStack = observer(function AppStack() {
       {isAuthenticated ? (
         <>
           <Stack.Screen name="welcome" component={WelcomeScreen} />
+          <Stack.Screen name="PostDetail" component={PostDetailScreen} />
           <Stack.Screen name="Demo" component={DemoNavigator} />
         </>
       ) : (
