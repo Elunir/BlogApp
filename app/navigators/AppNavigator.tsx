@@ -13,15 +13,16 @@ import {
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { useColorScheme } from "react-native"
 import Config from "../config"
-import { useStores } from "../models"
+// import { useStores } from "../models"
 import {
   LoginScreen, PostDetailScreen, RegisterScreen, WelcomeScreen, 
 } from "../screens/"
 import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
+import auth from '@react-native-firebase/auth'
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -40,7 +41,7 @@ export type AppStackParamList = {
   Demo: NavigatorScreenParams<DemoTabParamList>
   // 🔥 Your screens go here
   login: undefined
-  welcome: undefined
+  Welcome: undefined
   register: undefined
   PostDetail: undefined
 }
@@ -60,18 +61,30 @@ export type AppStackScreenProps<T extends keyof AppStackParamList> = StackScreen
 const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = observer(function AppStack() {
-  const {
-    authenticationStore: { isAuthenticated },
-  } = useStores()
+  // const {
+  //   authenticationStore: { isAuthenticated },
+  // } = useStores()
+
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
 
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
-      initialRouteName={isAuthenticated ? "welcome" : "login"}
+      initialRouteName={user ? "Welcome" : "login"}
     >
-      {isAuthenticated ? (
+      {user ? (
         <>
-          <Stack.Screen name="welcome" component={WelcomeScreen} />
+          <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="PostDetail" component={PostDetailScreen} />
           <Stack.Screen name="Demo" component={DemoNavigator} />
         </>

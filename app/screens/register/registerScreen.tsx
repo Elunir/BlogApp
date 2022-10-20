@@ -1,10 +1,11 @@
-import React, { FC, useMemo, useState } from "react"
+import React, { FC, useMemo, useRef, useState } from "react"
 import { observer } from "mobx-react-lite"
-import { TextStyle, ViewStyle } from "react-native"
+import { TextInput, TextStyle, ViewStyle } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { AppStackScreenProps, navigate } from "../../navigators"
 import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../../components"
 import { colors, spacing } from "../../theme"
+import auth from '@react-native-firebase/auth'
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "../models"
 
@@ -26,6 +27,10 @@ export const RegisterScreen: FC<StackScreenProps<AppStackScreenProps, "register"
     const [visibleConfirmPassword, setVisibleConfirmPassword] = useState(false)
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState('')
+
+    const passwordInput = useRef<TextInput>()
+    const confirmPasswordInput = useRef<TextInput>()
+
 
     const PasswordRightAccessory = useMemo(
       () =>
@@ -61,10 +66,10 @@ export const RegisterScreen: FC<StackScreenProps<AppStackScreenProps, "register"
       if (email.length === 0) setEmailError("can't be blank")
       if (email.length < 6) setEmailError("must be at least 6 characters")
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) setEmailError("must be a valid email address")
-      
       if (password.length === 0) setPasswordError("can't be blank")
       if (password.length < 6) setPasswordError("must be longer than 6 characters")
       if (password !== confirmPassword) setPasswordError("password must match")
+      auth().createUserWithEmailAndPassword(email,password).catch(err => console.log(err));
     }
 
     const login = () => {
@@ -85,9 +90,11 @@ export const RegisterScreen: FC<StackScreenProps<AppStackScreenProps, "register"
           keyboardType="email-address"
           label="Email"
           placeholder="Enter your email address"
+          onSubmitEditing={() => passwordInput.current?.focus()}
         />
         {emailError !== "" ? <Text style={$errorText} text={emailError} /> : null}
         <TextField
+          ref={passwordInput}
           value={password}
           onChangeText={setPassword}
           containerStyle={$textField}
@@ -98,8 +105,10 @@ export const RegisterScreen: FC<StackScreenProps<AppStackScreenProps, "register"
           label="Password"
           placeholder="Enter your password"
           RightAccessory={PasswordRightAccessory}
+          onSubmitEditing={() => confirmPasswordInput.current?.focus()}
         />
         <TextField
+          ref={confirmPasswordInput}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           containerStyle={$textField}

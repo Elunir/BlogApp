@@ -9,7 +9,7 @@ import { Screen, Text } from "../../components"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Post } from "../../components/post/post"
 import axios from "react-native-axios"
-import { useStores } from "../../models"
+import auth from '@react-native-firebase/auth'
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "../models"
 
@@ -25,9 +25,9 @@ import { useStores } from "../../models"
 export const WelcomeScreen: FC<StackScreenProps<AppStackScreenProps, "Welcome">> = observer(
   function WelcomeScreen() {
     // Pull in one of our MST stores
-    const { authenticationStore: {
-      logout
-    } } = useStores()
+    function logout(){
+      auth().signOut();
+    }
 
     // Pull in navigation via hook
     // const navigation = useNavigation()

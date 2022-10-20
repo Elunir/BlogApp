@@ -1,3 +1,5 @@
+$RNFirebaseAsStaticFramework = true
+
 pod_folder = Pathname.new(__FILE__).dirname.realpath
 
 require File.join(File.dirname(`cd #{pod_folder} && node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
@@ -10,6 +12,14 @@ install! 'cocoapods', :deterministic_uuids => false
 production = ENV["PRODUCTION"] == "1"
 
 target 'BlogApp' do
+  # use_modular_headers!
+  use_frameworks! :linkage => :static
+  # pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => false
+  # pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec', :modular_headers => false
+  # pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => false
+  # pod 'FirebaseCode', :modular_headers => true
+  # pod 'GoogleUtilities', :modular_headers => true
+
   use_expo_modules!
   post_integrate do |installer|
     begin
@@ -23,13 +33,14 @@ target 'BlogApp' do
   # Flags change depending on the env values.
   flags = get_default_flags()
 
+  
   use_react_native!(
     :path => config[:reactNativePath],
     :production => production,
     # to disable hermes on iOS, change `true` to `flags[:hermes_enabled]` and then install pods
     :hermes_enabled => true,
     :fabric_enabled => flags[:fabric_enabled],
-    :flipper_configuration => FlipperConfiguration.enabled(["Debug"], { 'Flipper' => '0.157.0' }),
+    # :flipper_configuration => FlipperConfiguration.enabled(["Debug"], { 'Flipper' => '0.157.0' }),
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

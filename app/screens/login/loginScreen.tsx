@@ -5,6 +5,7 @@ import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "
 import { useStores } from "../../models"
 import { AppStackScreenProps, navigate } from "../../navigators"
 import { colors, spacing } from "../../theme"
+import auth from '@react-native-firebase/auth'
 
 interface LoginScreenProps extends AppStackScreenProps<"login"> {}
 
@@ -48,7 +49,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     // We'll mock this with a fake token.
     setAuthToken(String(Date.now()))
     if(authEmail!== ''&&authPassword !== ''){
-      navigate('welcome')
+      auth().signInWithEmailAndPassword(authEmail,authPassword)
     }
   }
 
