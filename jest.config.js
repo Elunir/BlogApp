@@ -2,7 +2,7 @@ const { defaults: tsjPreset } = require("ts-jest/presets")
 
 module.exports = {
   ...tsjPreset,
-  preset: "jest-expo",
+  preset: "react-native",
   globals: {
     "ts-jest": {
       babelConfig: true,
